@@ -45,7 +45,3 @@ Secure flow resumption system allowing users to continue multi-step Salesforce f
 ✅ **User-Friendly**: Email-based continuation  
 ✅ **Enterprise**: Azure reliability & monitoring  
 ✅ **Scalable**: Stateless JWT validation  
-
----
-
-**Result**: Users can securely resume Salesforce flows from any device by clicking a time-limited email link, with enterprise-grade security throughout the process.
