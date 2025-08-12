@@ -1,35 +1,22 @@
 # Salesforce Flow Continuation Architecture
 
-## Overview
 Secure flow resumption system allowing users to continue multi-step Salesforce flows via email verification with JWT tokens.
-
-## Architecture Components
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Salesforce    │    │   Azure API     │    │   User Email    │
-│  Digital Exp.   │    │    Service      │    │   + Browser     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
 
 ## Process Flow
 
 ### **New User Flow**
 1. User enters name/email on Screen 1
-2. Check if Lead exists with `Flow_Interview_ID__c`
-3. **If NO**: Create Lead + assign Interview ID → Continue to Screen 2
+2. Check if a Lead with the provided email already exists
+3. **If NO**: Create Lead → Continue to Screen 2
 
 ### **Returning User Flow**
 1. User enters name/email on Screen 1  
-2. **If Lead EXISTS**: Show "Continue previous application?" button
-3. User clicks "Continue" button
+2. **If Lead EXISTS**: Show "Continue previous application?" popup and button
+3. User clicks the "Continue" button
 4. **Salesforce → Azure API**: POST `/continue-flow`
    ```json
    {
-     "email": "user@email.com",
-     "interviewId": "flow-guid-123",
-     "firstName": "John",
-     "orgId": "salesforce-org-id"
+     "email": "user@email.com"
    }
    ```
 5. **Azure API**:
@@ -37,8 +24,7 @@ Secure flow resumption system allowing users to continue multi-step Salesforce f
    - Sends email via Microsoft Graph API
 6. **User**: Clicks email link with JWT token
 7. **Browser → Azure API**: POST `/validate-token`
-8. **If Valid**: Redirect to Salesforce flow with Interview ID
-9. **Salesforce**: Resume flow from saved step
+8. **If Valid**: Fetch lead using email and resume flow from saved step (in lead object)
 
 ## Security Features
 
@@ -46,14 +32,12 @@ Secure flow resumption system allowing users to continue multi-step Salesforce f
 - Secret stored securely in Azure (not exposed to Salesforce)
 - 1-hour expiration
 - Email verification required
-- Org-specific validation
 
-## Technical Stack
+## Tech Stack
 
 - **Salesforce**: Flow + Apex HTTP callouts
 - **Azure**: App Service + Microsoft Graph (email)
 - **Security**: JWT tokens + Azure Key Vault
-- **Monitoring**: Azure Application Insights
 
 ## Key Benefits
 
