@@ -4,27 +4,22 @@ Secure flow resumption system allowing users to continue multi-step Salesforce f
 
 ## Process Flow
 
-### **New User Flow**
+### **Flow A: New User**
 1. User enters name/email on Screen 1
 2. Check if a Lead with the provided email already exists
-3. **If NO**: Create Lead → Continue to Screen 2
+3. If the lead doesn't exist, create a lead, then continue to the next screen.
 
-### **Returning User Flow**
+### **Flow B: Returning User**
 1. User enters name/email on Screen 1  
-2. **If Lead EXISTS**: Show "Continue previous application?" popup and button
-3. User clicks the "Continue" button
-4. **Salesforce → Azure API**: POST `/continue-flow`
-   ```json
-   {
-     "email": "user@email.com"
-   }
-   ```
-5. **Azure API**:
+2. If the lead exists, show a "Continue previous application?" popup and button
+3. If the user clicks the "Continue" button, send a POST API request to `/continue-flow?email="user@email.com"`
+5. In the API backend:
    - Generates secure JWT token (1hr expiry)
    - Sends email via Microsoft Graph API
-6. **User**: Clicks email link with JWT token → Navigates to link in browser
-7. **Browser → Azure API**: POST `/validate-token`
-8. **If Valid**: Fetch lead using email and resume flow from saved step (in lead object)
+6. User then clicks email link with JWT token → Navigates to link in browser
+7. Check if `token` param exists in the URL. If it does, execute the following steps:
+   - Grab token from URL params, then send POST API request to `/validate-token?token="..."`
+   - If the token is valid, fetch lead using email and resume flow from saved step (in lead object)
 
 ## Security Features
 
@@ -36,12 +31,5 @@ Secure flow resumption system allowing users to continue multi-step Salesforce f
 ## Tech Stack
 
 - **Salesforce**: Flow + Apex HTTP callouts
-- **Azure**: App Service + Microsoft Graph (email)
+- **Azure**: Express API + Microsoft Graph (email)
 - **Security**: JWT tokens + Azure Key Vault
-
-## Key Benefits
-
-✅ **Secure**: No secrets exposed to frontend  
-✅ **User-Friendly**: Email-based continuation  
-✅ **Enterprise**: Azure reliability & monitoring  
-✅ **Scalable**: Stateless JWT validation  
