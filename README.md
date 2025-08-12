@@ -22,7 +22,7 @@ Secure flow resumption system allowing users to continue multi-step Salesforce f
 5. **Azure API**:
    - Generates secure JWT token (1hr expiry)
    - Sends email via Microsoft Graph API
-6. **User**: Clicks email link with JWT token
+6. **User**: Clicks email link with JWT token → Navigates to link in browser
 7. **Browser → Azure API**: POST `/validate-token`
 8. **If Valid**: Fetch lead using email and resume flow from saved step (in lead object)
 
